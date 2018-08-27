@@ -372,7 +372,11 @@ static void Arith (lua_State *L, StkId ra, const TValue *rb,
           Protect(Arith(L, ra, rb, rc, tm)); \
       }
 
-
+typedef int (*fn_check_time)(void);
+static fn_check_time s_check_time = NULL;
+void luaV_set_check_time_fn(fn_check_time fn) {
+   s_check_time = fn;
+}
 
 void luaV_execute (lua_State *L, int nexeccalls) {
   LClosure *cl;
@@ -389,6 +393,12 @@ void luaV_execute (lua_State *L, int nexeccalls) {
   for (;;) {
     const Instruction i = *pc++;
     StkId ra;
+
+    if (s_check_time != NULL && !s_check_time()) {
+       luaG_runerror(L, "execution time out!");
+       return;
+    }
+
     if ((L->hookmask & (LUA_MASKLINE | LUA_MASKCOUNT)) &&
         (--L->hookcount == 0 || L->hookmask & LUA_MASKLINE)) {
       traceexec(L, pc);
