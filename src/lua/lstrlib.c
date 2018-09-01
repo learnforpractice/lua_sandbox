@@ -531,9 +531,16 @@ static const char *match_capture (MatchState *ms, const char *s, int l) {
   else return NULL;
 }
 
+typedef int (*fn_check_time)(void);
+fn_check_time luaV_get_check_time_fn();
 
 static const char *match (MatchState *ms, const char *s, const char *p) {
   init: /* using goto's to optimize tail recursion */
+  if (luaV_get_check_time_fn()) {
+     if (!luaV_get_check_time_fn()()) {
+        return NULL;
+     }
+  }
   switch (*p) {
     case '(': {  /* start capture */
       if (*(p+1) == ')')  /* position capture? */

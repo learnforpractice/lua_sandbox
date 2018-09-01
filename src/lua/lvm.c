@@ -378,6 +378,10 @@ void luaV_set_check_time_fn(fn_check_time fn) {
    s_check_time = fn;
 }
 
+fn_check_time luaV_get_check_time_fn() {
+   return s_check_time;
+}
+
 void luaV_execute (lua_State *L, int nexeccalls) {
   LClosure *cl;
   StkId base;
