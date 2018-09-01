@@ -1040,7 +1040,6 @@ static KOption getdetails (Header *h, size_t totalsize,
   return opt;
 }
 
-
 /*
 ** Pack integer 'n' with 'size' bytes and 'islittle' endianness.
 ** The final 'if' handles the case when 'size' is larger than
@@ -1049,7 +1048,9 @@ static KOption getdetails (Header *h, size_t totalsize,
 */
 static void packint (luaL_Buffer *b, lua_Unsigned n,
                      int islittle, int size, int neg) {
-  char *buff = luaL_prepbuffsize(b, size);
+//  char *buff = luaL_prepbuffsize(b, size);
+  char *buff = luaL_prepbuffer(b);
+
   int i;
   buff[islittle ? 0 : size - 1] = (char)(n & MC);  /* first byte */
   for (i = 1; i < size; i++) {
@@ -1099,7 +1100,8 @@ static int str_pack (lua_State *L) {
       }
       case Kfloat: {  /* floating-point options */
         volatile Ftypes u;
-        char *buff = luaL_prepbuffsize(&b, size);
+//        char *buff = luaL_prepbuffsize(&b, size);
+        char *buff = luaL_prepbuffer(&b);
         lua_Number n = luaL_checknumber(L, arg);  /* get argument */
         if (size == sizeof(u.f)) u.f = (float)n;  /* copy it into 'u' */
         else if (size == sizeof(u.d)) u.d = (double)n;
